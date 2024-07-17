@@ -16,7 +16,7 @@ if __name__ == "__main__":
     methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
     for method in methods:
         req_count = len(list(db.find({'method': method})))
-        print('\tmethod {}: {}'.format(method, req_count))
+        print('    method {}: {}'.format(method, req_count))
 
     status = db.count_documents({'method': 'GET', 'path': '/status'})
     print(f"{status} status check")
