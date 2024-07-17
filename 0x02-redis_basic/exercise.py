@@ -33,6 +33,24 @@ def call_history(method: Callable) -> Callable:
         return fn
     return wrapper
 
+def replay(func: Callable):
+    """A function to display the history of calls
+    of a particular function."""
+    redis_store = getattr(func.__self__, '_redis', None)
+    func_name = func.__qualname__
+    inp_m = redis_store.lrange("{}:inputs".format(func_name), 0, -1)
+    outp_m = redis_store.lrange("{}:outputs".format(func_name), 0, -1)
+    calls_count = len(inp_m)
+    times_str = 'times'
+    if calls_count == 1:
+        times_str = 'time'
+    fin = '{} was called {} {}:'.format(func_name, calls_count, times_str)
+    print(fin)
+    for k, v in zip(inp_m, outp_m):
+        fin = '{}(*{}) -> {}'.format(
+            func_name, k.decode('utf-8'), v.decode('utf-8'))
+        print(fin)
+
 class Cache:
     """Represents an object for storing data
     in a Redis data storage."""
